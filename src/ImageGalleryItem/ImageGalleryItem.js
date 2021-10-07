@@ -16,12 +16,12 @@ class ImageGalleryItem extends Component {
       <li className="ImageGalleryItem">
         <img
           onClick={(e) => {
-            this.props.modalFn(e.target.attributes[2].value);
+            this.props.modalFn(this.props.largeImageURL);
             console.log(e);
           }}
           src={this.props.imageLink}
           alt={this.props.imageAlt}
-          data-large={this.props.largeImageURL}
+          // data-large={}
           className="ImageGalleryItem-image"
         />
       </li>

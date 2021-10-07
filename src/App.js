@@ -1,14 +1,15 @@
 import React, { Component } from "react";
-import axios from "axios";
+// import axios from "axios";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Loader from "react-loader-spinner";
+import getImages from "./api";
 
 import Searchbar from "./Searchbar/Searchbar";
 import ImageGallery from "./ImageGallery/ImageGallery";
 import Button from "./Button/Button";
 import Modal from "./Modal/Modal";
 
-const apiKey = "20461350-36527ad634bc0878b1b72e118";
+// const apiKey = "20461350-36527ad634bc0878b1b72e118";
 
 class App extends Component {
   state = {
@@ -42,20 +43,20 @@ class App extends Component {
     return this.setState(({ showLoader }) => ({ showLoader: bool }));
   };
 
-  getImages(words, page) {
-    this.loaderToggle(true);
-    axios
-      .get(
-        `https://pixabay.com/api/?q=${words}&page=${page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`
-      )
-      .then((response) => {
-        this.pushImagesToState(response);
-        this.loaderToggle(false);
-        this.setState((prevState) => ({
-          currentPage: prevState.currentPage + 1,
-        }));
-      });
-  }
+  // getImages(words, page) {
+  //   this.loaderToggle(true);
+  //   axios
+  //     .get(
+  //       `https://pixabay.com/api/?q=${words}&page=${page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`
+  //     )
+  //     .then((response) => {
+  //       this.pushImagesToState(response);
+  //       this.loaderToggle(false);
+  //       this.setState((prevState) => ({
+  //         currentPage: prevState.currentPage + 1,
+  //       }));
+  //     });
+  // }
 
   searchFormSubmit = (event) => {
     event.preventDefault();
@@ -70,13 +71,28 @@ class App extends Component {
 
     this.setState({ searchWords: searchWordsValue });
     const page = 1;
-    this.getImages(searchWordsValue, page);
+    this.loaderToggle(true);
+    getImages(searchWordsValue, page).then((response) => {
+      this.pushImagesToState(response);
+      this.loaderToggle(false);
+      this.setState((prevState) => ({
+        currentPage: prevState.currentPage + 1,
+      }));
+    });
     event.target.reset();
   };
 
   loadMoreFn = () => {
     this.loaderToggle(true);
-    this.getImages(this.state.searchWords, this.state.currentPage);
+    getImages(this.state.searchWords, this.state.currentPage).then(
+      (response) => {
+        this.pushImagesToState(response);
+        this.loaderToggle(false);
+        this.setState((prevState) => ({
+          currentPage: prevState.currentPage + 1,
+        }));
+      }
+    );
   };
 
   render() {
@@ -94,7 +110,7 @@ class App extends Component {
             loader={this.loaderToggle}
             imagesArray={this.state.images}
             modalFn={this.openLargeImage}
-          ></ImageGallery>
+          />
         )}
         {this.state.showLoader && (
           <Loader
